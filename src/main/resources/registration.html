@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <style>
+            .buttons_container{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                height: fit-content;
+            }
+            form{
+                display: flex;
+                flex-direction: column;
+                width: max-content;
+            }
+            .form{
+                width: fit-content;
+            }
+            .form.none_active, * > .form.none_active {
+                display: none;
+            }
+            .form_button.active {
+                background-color:aqua;
+                text-decoration-color: white;
+            }
+        </style>
+        <script>
+            function activate(elem){
+                if(elem.classList.contains('none_active')){
+                    elem.classList.remove('none_active');
+                    elem.classList.add('active');
+                }
+            }
+            function disactivate(elem){
+                if(elem.classList.contains('active')){
+                    elem.classList.remove('active');
+                    elem.classList.add('none_active');
+                }
+            }
+            function change_activity(clicked_id){
+                if(clicked_id=="button_registration") {
+                    console.log("activate registration");
+                    activate(document.getElementById('button_registration'));
+                    disactivate(document.getElementById('button_enter'));
+                    activate(document.getElementById('form_registration'));
+                    disactivate(document.getElementById('form_enter'));
+                }
+                else if(clicked_id=="button_enter") {
+                    console.log('activate enter');
+                    disactivate(document.getElementById('button_registration'));
+                    activate(document.getElementById('button_enter'));
+                    disactivate(document.getElementById('form_registration'));
+                    activate(document.getElementById('form_enter'));
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="buttons_container">
+            <button id="button_registration" class="form_button none_active" onclick="change_activity(this.id)">
+                Регистриция
+            </button>
+            <button id="button_enter" class="form_button active" onclick="change_activity(this.id)">
+                Вход
+            </button>
+        </div>
+        <div class="form none_active" id="form_registration">
+            <h1>Регистрация</h1>
+            <form method="post" action="action/create_account">
+                <label for="nickname">Ваше имя (или прозвище)</label>
+                <input type="text" name="nickname" id="nickname" autocomplete="nickname"/>
+                <label for="login">Логин</label>
+                <input type="text" name="login" id="login" autocomplete="on"/>
+                <label for="password">Пароль</label>
+                <input type="password" name="password" id="password" autocomplete="off">
+                <input type="submit" value="Зарегистрироваться">
+            </form>
+        </div>
+        <div class="form active" id="form_enter">
+            <h1>Вход</h1>
+            <form method="post" action="action/enter_account">
+                <label for="login">Логин</label>
+                <input type="text" name="login" id="login" autocomplete="on"/>
+                <label for="password">Пароль</label>
+                <input type="password" name="password" id="password" autocomplete="off">
+                <input type="submit" value="Войти">
+            </form>
+        </div>
+    </body>
+</html>
