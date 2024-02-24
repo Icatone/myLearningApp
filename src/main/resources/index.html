@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #links {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+    <script>
+        window.onload = onPageLoaded;
+
+        function onPageLoaded(){
+         
+            localStorage.setItem('prev_link',window.location);
+            
+        }
+    </script>
+</head>
+
+<body>
+    <div id="links">
+        <a href="seeCardsets">Посмотреть карточки</a>
+        <a href="cardsetCreation">Создать набор карточек</a>
+        <a href="registration.html">Войти/Зарегистрироваться</a>
+    </div>
+</body>
+
+</html>

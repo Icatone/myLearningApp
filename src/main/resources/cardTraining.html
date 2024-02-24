@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .invisible_data {
+            display: none;
+        }
+    </style>
+    <script defer>
+        let card_input;
+        let card_header;
+        let card_btn;
+        let cardset_id;
+        const answers = [];
+        var current_card;
+        var is_last_card = false;
+        
+        const _url = new URL(window.location);
+        cardset_id = _url.searchParams.get('cardset_id')
+        sendRequest();
+
+        var card_queue;
+        window.onload = onPageLoaded;
+        
+        function getURL(){
+            const url = window.location;
+            const params = new URLSearchParams(url.search);
+            const newUrl = new URL("action/cardset",url);
+            //newUrl.searchParams.append("cardset_id",params.get("error"));
+        
+            return newUrl;
+            }
+        
+
+        function onPageLoaded() {
+            card_input = document.getElementById('card_text_input');
+            card_header = document.getElementById('card_head');
+            card_btn = document.getElementById('card_submition_btn');
+
+            updateWhenPageAndRequestLoaded();
+            
+            card_btn.onclick = onClick;
+        }
+        function onClick() {
+                if (card_queue != undefined) {
+                    const newObj = {
+                        "card": current_card,
+                        "answer": card_input.value
+                    }
+
+                    answers.push(newObj);
+                    if (is_last_card) {
+                        sendAnswers(answers);
+                    }
+                    else {
+                        current_card = card_queue.shift();
+                        is_last_card = card_queue.length == 0;
+                    }
+                    updatePageData();
+                }
+            }
+        function sendAnswers(anws) {
+            const xhr = new XMLHttpRequest();
+            const url = getURL();
+
+            xhr.open("POST",url,true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("cardset_id",cardset_id);
+            xhr.onloadend = (event) => {
+                window.location.replace("result");
+            }
+            xhr.send(JSON.stringify(answers));
+        }
+
+        function updateWhenPageAndRequestLoaded(){
+            if(card_header!=undefined&&card_queue!=undefined){
+                current_card = card_queue.shift();
+                is_last_card = card_queue.length == 0;
+                updatePageData();
+            }
+        }
+        function updatePageData() {
+            card_header.innerText = current_card.question;
+            if(is_last_card) {
+                card_btn.value = "Ответить и отправить";
+                //current_card = card_queue.shift();
+                //is_last_card = card_queue.length == 0;
+                //updatePageData();
+            }
+        }
+        function sendRequest(){
+            const xhr = new XMLHttpRequest();
+            const url = getURL();
+            xhr.onloadend = (event) => {
+                card_queue = JSON.parse(xhr.response);
+                updateWhenPageAndRequestLoaded();
+                console.log(xhr.response);
+            }
+            xhr.open("GET",url, true);
+            
+            //const cardset_id = params.get("cardset_id");
+            console.log(_url);
+            xhr.setRequestHeader("cardset_id",cardset_id);
+            xhr.send();
+        }
+    </script>
+</head>
+
+<body>
+    <div id="data_cardset_id" class="invisible_data"><c:out value="${cardset_id}"></div>
+    <form>
+        <h2 id="card_head"></h2>
+        <input type="text" id="card_text_input">
+        <input type="button" id="card_submition_btn" value="Ответить">
+    </form>
+</body>
+
+</html>
